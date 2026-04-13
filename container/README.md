@@ -1,16 +1,22 @@
 # Observability Stack
 
-Podman pod with OpenTelemetry Collector, Prometheus, Tempo, Loki, and Grafana.
+OpenTelemetry Collector, Prometheus, Tempo, Loki, and Grafana — available as a Podman pod or a Docker Compose stack.
 
 ## Start
 
-### Linux / macOS
+### Podman
 
 ```bash
 ./deploy.sh
 ```
 
-### Windows (PowerShell)
+### Docker Compose
+
+```bash
+./deploy-docker.sh
+```
+
+### Windows (PowerShell) — Podman only
 
 ```powershell
 podman pod stop observability 2>$null; podman pod rm observability 2>$null
@@ -19,13 +25,19 @@ podman kube play .\observability-stack.yaml
 
 ## Stop
 
-### Linux / macOS
+### Podman
 
 ```bash
 ./stop.sh
 ```
 
-### Windows (PowerShell)
+### Docker Compose
+
+```bash
+./stop-docker.sh
+```
+
+### Windows (PowerShell) — Podman only
 
 ```powershell
 podman pod stop observability; podman pod rm observability
@@ -33,21 +45,30 @@ podman pod stop observability; podman pod rm observability
 
 ## Endpoints
 
-| Service   | URL                   | Description              |
-|-----------|-----------------------|--------------------------|
+| Service   | URL                    | Description              |
+|-----------|------------------------|--------------------------|
 | Grafana   | http://localhost:3000  | UI (no login required)   |
-| OTLP gRPC | localhost:4317       | Telemetry ingestion      |
-| OTLP HTTP | localhost:4318       | Telemetry ingestion      |
+| OTLP gRPC | localhost:4317         | Telemetry ingestion      |
+| OTLP HTTP | localhost:4318         | Telemetry ingestion      |
 
-Prometheus (9090), Loki (3100), and Tempo (3200) are pod-internal only.
+Prometheus (9090), Loki (3100), and Tempo (3200) are internal only (not exposed to the host).
 
 ## Files
 
-| File                       | Purpose                                    |
-|----------------------------|--------------------------------------------|
-| `deploy.sh`                | Start the pod                              |
-| `stop.sh`                  | Stop and remove the pod                    |
-| `observability-stack.yaml` | Pod definition with all configs inline     |
+| File                                              | Purpose                                    |
+|---------------------------------------------------|--------------------------------------------|
+| `deploy.sh` / `stop.sh`                           | Start/stop the Podman pod                  |
+| `deploy-docker.sh` / `stop-docker.sh`             | Start/stop the Docker Compose stack        |
+| `observability-stack.yaml`                        | Podman pod definition with all configs inline |
+| `docker-compose.yaml`                             | Docker Compose service definitions         |
+| `config/collector-config.yaml`                    | OTel Collector pipeline configuration      |
+| `config/prometheus.yml`                           | Prometheus configuration                   |
+| `config/loki-config.yaml`                         | Loki configuration                         |
+| `config/tempo.yaml`                               | Tempo configuration                        |
+| `config/grafana/provisioning/datasources/`        | Grafana datasource provisioning            |
+| `config/grafana/provisioning/plugins/`            | Grafana plugin provisioning                |
+| `config/grafana/provisioning/dashboards/`         | Grafana dashboard provisioning             |
+| `grafana-dashboards/`                             | Dashboard JSON files (both deployments)    |
 
 ## Data Flow
 
@@ -58,3 +79,7 @@ Prometheus (9090), Loki (3100), and Tempo (3200) are pod-internal only.
 
 Grafana reads from all three backends.
 ```
+
+## Podman vs Docker Compose
+
+The Podman pod runs all containers sharing a single `localhost` network namespace (like a Kubernetes pod). The Docker Compose stack uses a dedicated bridge network where containers address each other by service name. Behaviour and exposed endpoints are identical either way.
