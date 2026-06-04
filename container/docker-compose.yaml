@@ -24,12 +24,15 @@ services:
     volumes:
       - ./config/collector-config.yaml:/conf/collector-config.yaml:ro
     ports:
-      - "4317:4317"   # OTLP gRPC
-      - "4318:4318"   # OTLP HTTP
+      - "127.0.0.1:4317:4317"   # OTLP gRPC
+      - "127.0.0.1:4318:4318"   # OTLP HTTP
     depends_on:
       - tempo
       - prometheus
       - loki
+    networks:
+      - tele-net
+
 
   # --- Tempo ---
   # Distributed tracing backend, generates service graphs and span metrics
@@ -39,6 +42,8 @@ services:
     volumes:
       - ./config/tempo.yaml:/etc/tempo/tempo.yaml:ro
       - tempo-data:/var/tempo
+    networks:
+      - tele-net
 
   # --- Prometheus ---
   # Metrics storage, receives data via remote write from collector and Tempo
@@ -51,6 +56,8 @@ services:
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
+    networks:
+      - tele-net
 
   # --- Loki ---
   # Log aggregation, receives logs via OTLP from collector
@@ -60,6 +67,8 @@ services:
     volumes:
       - ./config/loki-config.yaml:/etc/loki/loki-config.yaml:ro
       - loki-data:/loki
+    networks:
+      - tele-net
 
   # --- Grafana ---
   # Visualization UI with pre-configured datasources, plugins, and dashboards
@@ -77,15 +86,22 @@ services:
       - ./config/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
       - ./grafana-dashboards:/var/lib/grafana/dashboards:ro
       - grafana-data:/var/lib/grafana
-    ports:
-      - "3000:3000"   # Grafana UI
+        #    ports:
+      #      - "3000:3000"   # Grafana UI
     depends_on:
       - tempo
       - prometheus
       - loki
+    networks:
+      - tele-net
 
 volumes:
   tempo-data:
   prometheus-data:
   loki-data:
   grafana-data:
+networks:
+  tele-net:
+    driver: bridge
+    name: tele-net
+
