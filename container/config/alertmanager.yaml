@@ -1,0 +1,46 @@
+# Alertmanager configuration
+# Receives alerts from Prometheus (metric rules) and Loki (log rules) and
+# forwards critical/warning alerts to Matrix via matrix-alertmanager-receiver.
+#
+# The receiver exposes one webhook URL per room: /<alerts-path-prefix>/<room>
+# where <room> is a room-mapping alias defined in
+# config/matrix-receiver/config.yaml.template (here: "dim-alerts").
+
+route:
+  # Group alerts so a burst becomes a single Matrix message thread.
+  group_by: ['alertname', 'severity']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  # Default sink: anything that reaches the root goes to Matrix.
+  receiver: matrix
+  routes:
+    # Only critical and warning notify Matrix; info/none are dropped.
+    - matchers:
+        - severity =~ "critical|warning"
+      receiver: matrix
+      continue: false
+    # Swallow everything else (e.g. severity=info) without notifying.
+    - matchers:
+        - severity !~ "critical|warning"
+      receiver: 'null'
+
+receivers:
+  - name: 'null'
+
+  - name: matrix
+    webhook_configs:
+      - url: http://matrix-alertmanager-receiver:9088/alerts/dim-alerts
+        send_resolved: true
+        # Basic auth must match http.basic-username / http.basic-password in
+        # the matrix-receiver config. Kept simple here; tighten if exposed.
+        http_config:
+          basic_auth:
+            username: alertmanager
+            password: changeme-shared-with-bridge
+
+inhibit_rules:
+  # A firing critical alert suppresses a warning for the same alertname.
+  - source_matchers: [severity = "critical"]
+    target_matchers: [severity = "warning"]
+    equal: ['alertname']

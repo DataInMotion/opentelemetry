@@ -1,0 +1,35 @@
+# Template for matrix-alertmanager-receiver (metio).
+# render-config.sh substitutes the placeholders and writes the runtime
+# config/matrix-receiver/config.yaml (gitignored). The metio image is a
+# minimal Go binary with no shell, so the config is rendered on the host
+# rather than inside the container.
+#
+# Placeholders:
+#   ACCESS_TOKEN_PLACEHOLDER  -> @alertbot access token (from OpenBao)
+#   ROOM_ID_PLACEHOLDER       -> alerts room ID, e.g. !abc123:chat.datainmotion.com
+
+http:
+  address: 0.0.0.0
+  port: 9088
+  alerts-path-prefix: /alerts
+  metrics-path: /metrics
+  metrics-enabled: true
+  # Must match the basic_auth block in config/alertmanager.yaml.
+  basic-username: alertmanager
+  basic-password: changeme-shared-with-bridge
+
+matrix:
+  # Public Synapse endpoint — the observability stack runs on a DIFFERENT host
+  # than Matrix, so it reaches Synapse over the internet via APISIX.
+  homeserver-url: https://chat.datainmotion.com
+  user-id: "@alertbot:chat.datainmotion.com"
+  access-token: ACCESS_TOKEN_PLACEHOLDER
+  room-mapping:
+    # Alias used in the Alertmanager webhook URL (/alerts/dim-alerts).
+    dim-alerts: "ROOM_ID_PLACEHOLDER"
+
+templating:
+  external-url-mapping: {}
+  generator-url-mapping: {}
+  firing-template: "🔥 [{{ ToUpper .Alert.Labels.severity }}] {{ .Alert.Labels.alertname }} — {{ .Alert.Annotations.summary }}{{ if .Alert.Annotations.description }} | {{ .Alert.Annotations.description }}{{ end }}"
+  resolved-template: "✅ [RESOLVED] {{ .Alert.Labels.alertname }}{{ if .Alert.Annotations.summary }} — {{ .Alert.Annotations.summary }}{{ end }}"

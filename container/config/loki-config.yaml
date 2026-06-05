@@ -23,3 +23,18 @@ schema_config:
 limits_config:
   allow_structured_metadata: true
   volume_enabled: true
+# Loki ruler: evaluate LogQL alerting rules and push to Alertmanager, so
+# log-based alerts share the same pipeline/room as Prometheus metric alerts.
+# Rules are mounted read-only at /etc/loki/rules/<tenant>/; tenant is `fake`
+# because auth_enabled is false.
+ruler:
+  alertmanager_url: http://alertmanager:9093
+  enable_alertmanager_v2: true
+  storage:
+    type: local
+    local:
+      directory: /etc/loki/rules
+  rule_path: /tmp/loki-rules
+  ring:
+    kvstore:
+      store: inmemory

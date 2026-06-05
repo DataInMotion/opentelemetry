@@ -5,6 +5,11 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo "=== OpenTelemetry Demo - Deploy Observability Stack (Docker Compose) ==="
 
+# Render the Matrix bridge config (injects the @alertbot token + room ID).
+# The image has no shell, so the secret is substituted on the host here.
+echo "Rendering Matrix receiver config..."
+"$DIR/config/matrix-receiver/render-config.sh"
+
 echo "Starting observability stack..."
 docker compose -f "$DIR/docker-compose.yaml" up -d
 

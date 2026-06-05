@@ -55,6 +55,7 @@ services:
       - "--web.enable-remote-write-receiver"
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/prometheus/rules:/etc/prometheus/rules:ro
       - prometheus-data:/prometheus
     networks:
       - tele-net
@@ -66,6 +67,7 @@ services:
     command: ["-config.file=/etc/loki/loki-config.yaml"]
     volumes:
       - ./config/loki-config.yaml:/etc/loki/loki-config.yaml:ro
+      - ./config/loki/rules:/etc/loki/rules:ro
       - loki-data:/loki
     networks:
       - tele-net
@@ -95,13 +97,42 @@ services:
     networks:
       - tele-net
 
+  # --- Alertmanager ---
+  # Receives alerts from Prometheus (metric rules) and Loki (log rules),
+  # deduplicates/groups them, and routes critical/warning to the Matrix bridge.
+  alertmanager:
+    image: docker.io/prom/alertmanager:v0.32.1
+    command: ["--config.file=/etc/alertmanager/alertmanager.yaml"]
+    volumes:
+      - ./config/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml:ro
+      - alertmanager-data:/alertmanager
+    depends_on:
+      - matrix-alertmanager-receiver
+    networks:
+      - tele-net
+
+  # --- Matrix Alertmanager Receiver ---
+  # Webhook bridge: turns Alertmanager notifications into Matrix room messages,
+  # posting as @alertbot to the Synapse homeserver.
+  # This stack runs on a different host than Matrix, so it reaches Synapse over
+  # the public endpoint (https://chat.datainmotion.com) — no special network.
+  # The runtime config is rendered by config/matrix-receiver/render-config.sh
+  # (the image has no shell, so the token is injected on the host).
+  matrix-alertmanager-receiver:
+    image: docker.io/metio/matrix-alertmanager-receiver:2026.6.3
+    command: ["--config-path=/etc/matrix-alertmanager-receiver/config.yaml"]
+    volumes:
+      - ./config/matrix-receiver/config.yaml:/etc/matrix-alertmanager-receiver/config.yaml:ro
+    networks:
+      - tele-net
+
 volumes:
   tempo-data:
   prometheus-data:
   loki-data:
   grafana-data:
+  alertmanager-data:
 networks:
   tele-net:
     driver: bridge
     name: tele-net
-

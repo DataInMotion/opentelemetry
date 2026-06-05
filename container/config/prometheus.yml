@@ -2,3 +2,13 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 remote_write: []
+
+# Forward firing alerts to Alertmanager.
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+# Alerting/recording rules (mounted read-only from config/prometheus/rules/).
+rule_files:
+  - /etc/prometheus/rules/*.yaml
