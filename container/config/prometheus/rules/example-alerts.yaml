@@ -1,0 +1,42 @@
+# Example Prometheus alerting rules.
+#
+# This Prometheus is a remote-write SINK (no scrape targets), so the usual
+# `up == 0` target-health alert does NOT apply here — `up` is never produced.
+# Alerts must be expressed over the OTLP metrics your apps remote-write.
+#
+# The two rules below are TEMPLATES: adjust the metric names, thresholds and
+# `for` durations to your actual telemetry before relying on them. The
+# `severity` label (critical|warning) is what routes the alert to Matrix
+# (see config/alertmanager.yaml).
+groups:
+  - name: example-metric-alerts
+    rules:
+      # WARNING: a service stopped reporting any data for 10m.
+      # `absent_over_time` fires when the series disappears entirely — useful
+      # as a liveness signal for a metric you expect to always be present.
+      # Replace `target_info` with a metric your services always emit.
+      - alert: TelemetrySilent
+        expr: absent_over_time(target_info[10m])
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No telemetry received for 10m"
+          description: "No `target_info` samples in the last 10 minutes — a service may be down or the collector is not forwarding metrics."
+
+      # CRITICAL: high error ratio on HTTP server spans/metrics.
+      # Adjust to your metric: here we assume an OTLP HTTP server request
+      # counter `http_server_request_duration_seconds_count` with a
+      # `http_response_status_code` attribute.
+      - alert: HighHttpErrorRate
+        expr: |
+          sum(rate(http_server_request_duration_seconds_count{http_response_status_code=~"5.."}[5m]))
+            /
+          sum(rate(http_server_request_duration_seconds_count[5m]))
+            > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "HTTP 5xx error rate above 5%"
+          description: "More than 5% of HTTP server requests are returning 5xx over the last 5 minutes."

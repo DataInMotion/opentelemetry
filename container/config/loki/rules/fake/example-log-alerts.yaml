@@ -1,0 +1,33 @@
+# Example Loki log-based alerting rules (LogQL).
+#
+# Tenant directory is `fake` because the stack runs with `auth_enabled: false`
+# — Loki assigns all data to the `fake` tenant. The ruler evaluates these and
+# pushes firing alerts to Alertmanager (see the `ruler` block in
+# config/loki-config.yaml).
+#
+# These are TEMPLATES: adjust the LogQL stream selectors/thresholds to match
+# the labels your logs actually carry. The `severity` label routes to Matrix.
+groups:
+  - name: example-log-alerts
+    rules:
+      # CRITICAL: a sustained burst of error/critical log lines.
+      - alert: HighErrorLogRate
+        expr: |
+          sum(rate({service_name=~".+"} | level =~ "(?i)error|critical|fatal" [5m])) > 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High rate of error logs"
+          description: "More than 1 error/critical/fatal log line per second over the last 5 minutes."
+
+      # WARNING: any panic/stacktrace appearing in logs.
+      - alert: PanicInLogs
+        expr: |
+          sum(count_over_time({service_name=~".+"} |~ "(?i)panic:|traceback|stack trace" [5m])) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Panic or stack trace detected in logs"
+          description: "A panic/traceback/stack-trace pattern was logged in the last 5 minutes."

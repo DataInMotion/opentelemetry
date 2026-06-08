@@ -1,0 +1,60 @@
+stream_over_http_enabled: true
+server:
+  http_listen_port: 3200
+  grpc_listen_port: 9096
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4320
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/traces
+    wal:
+      path: /var/tempo/wal
+metrics_generator:
+  registry:
+    collection_interval: 15s
+    external_labels:
+      source: tempo
+  processor:
+    service_graphs:
+      dimensions:
+        - http.method
+        - http.status_code
+      enable_client_server_prefix: true
+    span_metrics:
+      dimensions:
+        - http.method
+        - http.status_code
+        - http.route
+        - db.system
+        - db.operation
+    local_blocks:
+      max_live_traces: 10000
+      flush_to_storage: true
+  storage:
+    path: /var/tempo/metrics
+    remote_write:
+      - url: http://prometheus:9090/api/v1/write
+  traces_storage:
+    path: /var/tempo/traces
+query_frontend:
+  max_retries: 2
+  search:
+    max_duration: 0s
+overrides:
+  defaults:
+    metrics_generator:
+      processors:
+        - service-graphs
+        - span-metrics
+        - local-blocks
+ingester:
+  max_block_duration: 5m
+compactor:
+  compaction:
+    block_retention: 1h
