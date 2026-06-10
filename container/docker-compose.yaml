@@ -21,6 +21,7 @@ services:
   otel-collector:
     image: docker.io/otel/opentelemetry-collector-contrib:0.148.0
     command: ["--config=/conf/collector-config.yaml"]
+    restart: unless-stopped
     volumes:
       - ./config/collector-config.yaml:/conf/collector-config.yaml:ro
     ports:
@@ -39,6 +40,7 @@ services:
   tempo:
     image: docker.io/grafana/tempo:2.10.3
     command: ["-config.file=/etc/tempo/tempo.yaml"]
+    restart: unless-stopped
     volumes:
       - ./config/tempo.yaml:/etc/tempo/tempo.yaml:ro
       - tempo-data:/var/tempo
@@ -53,6 +55,7 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
       - "--web.enable-remote-write-receiver"
+    restart: unless-stopped
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./config/prometheus/rules:/etc/prometheus/rules:ro
@@ -65,6 +68,7 @@ services:
   loki:
     image: docker.io/grafana/loki:3.6.7
     command: ["-config.file=/etc/loki/loki-config.yaml"]
+    restart: unless-stopped
     volumes:
       - ./config/loki-config.yaml:/etc/loki/loki-config.yaml:ro
       - ./config/loki/rules:/etc/loki/rules:ro
@@ -82,6 +86,7 @@ services:
       GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
       GF_INSTALL_PLUGINS: "grafana-exploretraces-app,grafana-lokiexplore-app,grafana-metricsdrilldown-app"
+    restart: unless-stopped
     volumes:
       - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
       - ./config/grafana/provisioning/plugins:/etc/grafana/provisioning/plugins:ro
@@ -103,6 +108,7 @@ services:
   alertmanager:
     image: docker.io/prom/alertmanager:v0.32.1
     command: ["--config.file=/etc/alertmanager/alertmanager.yaml"]
+    restart: unless-stopped
     volumes:
       - ./config/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml:ro
       - alertmanager-data:/alertmanager
@@ -121,6 +127,7 @@ services:
   matrix-alertmanager-receiver:
     image: docker.io/metio/matrix-alertmanager-receiver:2026.6.3
     command: ["--config-path=/etc/matrix-alertmanager-receiver/config.yaml"]
+    restart: unless-stopped
     volumes:
       - ./config/matrix-receiver/config.yaml:/etc/matrix-alertmanager-receiver/config.yaml:ro
     networks:
