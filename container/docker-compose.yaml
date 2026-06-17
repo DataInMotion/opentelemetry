@@ -35,6 +35,26 @@ services:
       - tele-net
 
 
+  # --- Telegraf (MQTT -> OpenTelemetry bridge) ---
+  # The collector has no MQTT receiver, so Telegraf subscribes to the existing
+  # broker(s) and fans JSON messages out: numeric fields -> OTLP metrics to the
+  # collector (-> Prometheus), raw payloads -> logs pushed straight to Loki.
+  # Broker credentials come from config/telegraf/secret.env (gitignored);
+  # topic filters are set in config/telegraf/telegraf.conf.
+  telegraf:
+    image: docker.io/telegraf:1.39.0
+    command: ["telegraf", "--config", "/etc/telegraf/telegraf.conf"]
+    restart: unless-stopped
+    volumes:
+      - ./config/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    env_file:
+      - ./config/telegraf/secret.env
+    depends_on:
+      - otel-collector
+      - loki
+    networks:
+      - tele-net
+
   # --- Tempo ---
   # Distributed tracing backend, generates service graphs and span metrics
   tempo:

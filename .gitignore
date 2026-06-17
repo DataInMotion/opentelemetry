@@ -34,3 +34,10 @@ felix-cache
 .settings
 .project
 
+# Rendered Matrix bridge config + its secrets (contain the @alertbot token)
+container/config/matrix-receiver/config.yaml
+container/config/matrix-receiver/secret.env
+
+# Telegraf MQTT bridge broker credentials
+container/config/telegraf/secret.env
+
