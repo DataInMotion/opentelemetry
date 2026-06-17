@@ -3,6 +3,12 @@ global:
   evaluation_interval: 15s
 remote_write: []
 
+otlp:
+  translation_strategy: UnderscoreEscapingWithSuffixes
+  promote_resource_attributes:
+    - host.name
+  keep_identifying_resource_attributes: true
+
 # Forward firing alerts to Alertmanager.
 alerting:
   alertmanagers:
