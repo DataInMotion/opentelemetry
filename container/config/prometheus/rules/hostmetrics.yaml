@@ -1,0 +1,167 @@
+groups:
+  - name: hostmetrics
+
+    rules:
+      - alert: high_memory_usage
+
+        expr: |
+          100
+          *
+          sum by (host_name) (system_memory_usage_bytes{state=~"used|slab_unreclaimable"})
+          /
+          sum by (host_name) (system_memory_usage_bytes) > 80
+
+        for: 5m
+
+        labels:
+          severity: warning
+
+        annotations:
+          summary: "High Memory Usage"
+          description: |
+            Host: {{ $labels.host_name }}
+            Wert: {{ $value }}
+            Memory Usage over 80 %
+
+      - alert: critical_memory_usage
+
+        expr: |
+          100
+          *
+          sum by (host_name) (system_memory_usage_bytes{state=~"used|slab_unreclaimable"})
+          /
+          sum by (host_name) (system_memory_usage_bytes) > 90
+
+        for: 5m
+
+        labels:
+          severity: critical
+
+        annotations:
+          summary: "Critical Memory Usage"
+          description: |
+            Host: {{ $labels.host_name }}
+            Wert: {{ $value }}
+            Memory Usage over 90 %
+
+      - alert: high_cpu_load
+
+        expr: |
+          group by(host_name) (system_cpu_load_average_1m)
+          /
+          (count by(host_name) (system_cpu_time_seconds_total{state="idle"})) > 0.8
+
+        for: 5m
+
+        labels:
+          severity: warning
+
+        annotations:
+          summary: "High CPU Load"
+          description: |
+            Host: {{ $labels.host_name }}
+            Wert: {{ $value }}
+            CPU Load per Core is higher than 0.8
+
+      - alert: critical_cpu_load
+
+        expr: |
+          group by(host_name) (system_cpu_load_average_1m)
+          /
+          (count by(host_name) (system_cpu_time_seconds_total{state="idle"})) > 1.5
+
+        for: 5m
+
+        labels:
+          severity: critical
+
+        annotations:
+          summary: "Critical CPU Load"
+          description: |
+            Host: {{ $labels.host_name }}
+            Wert: {{ $value }}
+            CPU Load per Core is higher than 1.5
+
+      - alert: high_filesystem_usage
+
+        expr: |
+          100 *
+          sum by (host_name, mountpoint) (system_filesystem_usage_bytes{device!~"^/dev/loop[0-9]+(p[0-9]+)?$", state="used"})
+          /
+          sum by (host_name, mountpoint) (system_filesystem_usage_bytes{device!~"^/dev/loop[0-9]+(p[0-9]+)?$"}) > 80
+
+        for: 5m
+
+        labels:
+          severity: warning
+
+        annotations:
+          summary: "High Filesystem Usage"
+          description: |
+            Host: {{ $labels.host_name }}
+            Filesystem: {{ $labels.mountpoint }}
+            Wert: {{ $value }}
+            Filesystem Usage is over 80 %
+
+      - alert: critical_filesystem_usage
+
+        expr: |
+          100 *
+          sum by (host_name, mountpoint) (system_filesystem_usage_bytes{device!~"^/dev/loop[0-9]+(p[0-9]+)?$", state="used"})
+          /
+          sum by (host_name, mountpoint) (system_filesystem_usage_bytes{device!~"^/dev/loop[0-9]+(p[0-9]+)?$"}) > 90
+
+        for: 5m
+
+        labels:
+          severity: critical
+
+        annotations:
+          summary: "Critical Filesystem Usage"
+          description: |
+            Host: {{ $labels.host_name }}
+            Filesystem: {{ $labels.mountpoint }}
+            Wert: {{ $value }}
+            Filesystem Usage is over 90 %
+
+      - alert: high_filesystem_inode_usage
+
+        expr: |
+          100 *
+          sum by(host_name, mountpoint) (system_filesystem_inodes_usage{device!~"^/dev/loop[0-9]+(p[0-9]+)?$", state="used"})
+          /
+          (clamp_min(sum by(host_name, mountpoint) (system_filesystem_inodes_usage{device!~"^/dev/loop[0-9]+(p[0-9]+)?$"}), 1)) > 80
+
+        for: 5m
+
+        labels:
+          severity: warning
+
+        annotations:
+          summary: "High Filesystem Inode Usage"
+          description: |
+            Host: {{ $labels.host_name }}
+            Filesystem: {{ $labels.mountpoint }}
+            Wert: {{ $value }}
+            Filesystem Inode Usage is over 80 %
+
+      - alert: critical_filesystem_inode_usage
+
+        expr: |
+          100 *
+          sum by(host_name, mountpoint) (system_filesystem_inodes_usage{device!~"^/dev/loop[0-9]+(p[0-9]+)?$", state="used"})
+          /
+          (clamp_min(sum by(host_name, mountpoint) (system_filesystem_inodes_usage{device!~"^/dev/loop[0-9]+(p[0-9]+)?$"}), 1)) > 90
+
+        for: 5m
+
+        labels:
+          severity: critical
+
+        annotations:
+          summary: "Critical Filesystem Inode Usage"
+          description: |
+            Host: {{ $labels.host_name }}
+            Filesystem: {{ $labels.mountpoint }}
+            Wert: {{ $value }}
+            Filesystem Inode Usage is over 90 %
