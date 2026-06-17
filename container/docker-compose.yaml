@@ -133,6 +133,12 @@ services:
     networks:
       - tele-net
 
+  blackbox-exporter:
+    image: prom/blackbox-exporter
+    networks:
+      - tele-net
+    restart: unless-stopped
+
 volumes:
   tempo-data:
   prometheus-data:
