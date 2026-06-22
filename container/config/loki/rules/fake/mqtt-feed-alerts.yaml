@@ -1,0 +1,28 @@
+# Loki log-based alerts for the Telegraf MQTT log feed (see config/telegraf).
+#
+# The `mqtt_log` output pushes every MQTT payload to Loki as a log line. Those
+# lines carry the labels `__name="mqtt_log"` (Telegraf's metric_name_label
+# default), `source="mqtt"` and `topic="<source topic>"`.
+#
+# There is no separate metric for the payload's resultTime/phenomenonTime, so
+# staleness is detected from the *absence of log lines*: for this live feed the
+# Loki ingestion time tracks those payload timestamps closely, so "no lines for
+# 3 minutes" is an accurate proxy for "newest reading is older than 3 minutes".
+#
+# Why `or vector(0)`: when a stream goes fully silent, count_over_time returns
+# an EMPTY result (not 0), so a bare `== 0` would never fire. `or vector(0)`
+# substitutes a 0 sample when the whole feed is gone, which is what makes the
+# absence alert trigger.
+groups:
+  - name: mqtt-feed-alerts
+    rules:
+      # WARNING: the MQTT feed has gone silent — no payload logged for 3 min.
+      - alert: MqttFeedStale
+        expr: |
+          (sum(count_over_time({__name="mqtt_log"}[3m])) or vector(0)) == 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MQTT feed stale (no data for >3m)"
+          description: "No MQTT log line has been ingested in the last 3 minutes — the latest reading (resultTime/phenomenonTime) is older than 3 minutes or the feed has stopped."
