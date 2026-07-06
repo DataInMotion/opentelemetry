@@ -19,6 +19,17 @@ processors:
       - key: deployment.environment
         value: development
         action: upsert
+  transform:
+    metric_statements:
+      - context: datapoint
+        statements:
+          - set(attributes["container.name"], resource.attributes["container.name"])
+          - set(attributes["container.image.name"], resource.attributes["container.image.name"])
+          - set(attributes["container.hostname"], resource.attributes["container.hostname"])
+    log_statements:
+      - context: log
+        statements:
+          - set(resource.attributes["log.source"], attributes["log.file.path"])
 
 exporters:
   otlp/tempo:
@@ -26,7 +37,7 @@ exporters:
     tls:
       insecure: true
   otlphttp/prometheus:
-    endpoint: http://prometheus:9090/api/v1/otlp 
+    endpoint: http://prometheus:9090/api/v1/otlp
     tls:
       insecure: true
   otlphttp/loki:
@@ -42,11 +53,11 @@ service:
       exporters: [otlp/tempo, debug]
     metrics:
       receivers: [otlp]
-      processors: [memory_limiter, batch, resource]
+      processors: [memory_limiter, batch, resource, transform]
       exporters: [otlphttp/prometheus, debug]
     logs:
       receivers: [otlp]
-      processors: [batch, resource]
+      processors: [batch, resource, transform]
       exporters: [otlphttp/loki, debug]
   telemetry:
     logs:

@@ -1,0 +1,15 @@
+groups:
+  - name: docker
+    rules:
+      - alert: Restart
+        expr: |
+          rate(container_restarts_total[1m]) > 1
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Docker Container restarted multiple times in one minute."
+          description: |
+            Host: {{ $labels.host_name }}
+            Container: {{ $labels.container_name }}
+            Image: {{ $labels.container_image_name }}

@@ -1,0 +1,21 @@
+groups:
+  - name: debug-alerts
+
+    rules:
+      - alert: new_container
+
+        expr: |
+          container_uptime_seconds{container_name!~"apisix-apisix-1|docker-apisix-1|osgi-specs-tika-1|collabora-collabora-1|mqttbridge-mqttbridge-1|pipoint-pipoint-1|udp-sensinact-1|docker-dim-devel-1|docker-backend-1|docker-dim-rabbitmq-1|dim-presentations_custom|dim-presentations|dim_webpage-dim-webpage-1|docker-www-1|docker-governance-1|vmt_dim-vdv454-service-1|observability-grafana-1|observability-loki-1|observability-tempo-1|observability-matrix-alertmanager-receiver-1|observability-otel-collector-1|observability-alertmanager-1|observability-prometheus-1|observability-telegraf-1|mosquitto|docker-daanse-1|model-atlas-cloud-daanse-1|daanse-daanse_client-1|dockercompose-jena-model-atlas-1|dockercompose-model-atlas-1|docker-etcd-1|gene-gene-1|jitsi-jitsi-openid-1|jitsi-jicofo-1|jitsi-jvb-1|jitsi-prosody-1|jitsi-web-1|keycloak-keycloak-1|kimai-kimai-1|matrix-synapse-1|dim-presentation-mongodb|udp-mongodb-1|kimai-kimai-mysql-1|nextcloud-nextcloud-1|nsc-mcp-1|nsc-ui-nsc-ui-1|openbao-openbao-1|osgi-specs-mcp-1|hedgedoc-hedgedoc-postgres-1|keycloak-keycloak-postgres-1|matrix-synapse-postgres-1|nextcloud-nextcloud-postgres-1|vaultwarden-vaultwarden-postgres-1|postgres|observability-blackbox-exporter-1|apisix-apisix-etcd-1|hedgedoc-hedgedoc-1|keycloak|minio|nextcloud-nextcloud-redis-1|docker-dim-nexus-1|udp-timescaledb-1|vaultwarden-vaultwarden-1|matrix-element-web-1"} > 0
+
+        for: 1m
+
+        labels:
+          severity: warning
+
+        annotations:
+          summary: "New Docker Container Detected!"
+          description: |
+            Host: {{ $labels.host_name }}
+            Name: {{ $labels.container_name }}
+            Image: {{ $labels.container_image_name }}
+            Hostname: {{$labels.container_hostname}}
