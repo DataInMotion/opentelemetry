@@ -36,17 +36,17 @@
 # -----------------------------------------------------------------------------
 [[inputs.mqtt_consumer]]
   name_override = "mqtt"
-  servers = ["wss://udp.datainmotion.com:8886/mqtt"]            # e.g. "tcp://broker:1883" or "ssl://broker:8883"
-  client_id = "telegraf-otel-metrics2"
+  servers = ["${MQTT_URL}"]            # e.g. "tcp://broker:1883" or "ssl://broker:8883"
+  username = "${MQTT_USERNAME}"
+  password = "${MQTT_PASSWORD}"
+  client_id = "telegraf-otel-metrics"
   qos = 0
   topics = [
     "#",                               # TODO: replace with your telemetry topic(s)
-#    "v1.1/Observations(K440~F1_1~color)"
   ]
   topic_tag = "topic"                  # store the source topic as a tag/label
 
   data_format = "json"                 # numeric JSON fields become metric fields
-  json_string_fields = ["color"]      # keep selected string fields (else dropped)
   # tag_keys = ["device", "location"]  # promote selected JSON keys to tags (labels)
   # json_string_fields = ["status"]    # keep selected string fields (else dropped)
   # json_time_key = "timestamp"        # use a payload field as the timestamp
@@ -61,18 +61,18 @@
 # -----------------------------------------------------------------------------
 [[inputs.mqtt_consumer]]
   name_override = "mqtt_log"
-  servers = ["wss://udp.datainmotion.com:8886/mqtt"]
-  client_id = "telegraf-otel-logs2"
+  servers = ["${MQTT_URL}"]
+  username = "${MQTT_USERNAME}"
+  password = "${MQTT_PASSWORD}"
+  client_id = "telegraf-otel-logs"
   qos = 0
   topics = [
     "#",                               # TODO: same topic(s) as above (or a subset)
-#    "v1.1/Observations(K440~F1_1~color)"
   ]
   topic_tag = "topic"
 
   data_format = "value"                # keep the whole payload...
   data_type = "string"                 # ...as the field "value"
-#  data_format = "json"
 
 [[outputs.loki]]
   domain = "http://loki:3100"          # Loki push API base (auth disabled -> tenant "fake")
