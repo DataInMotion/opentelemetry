@@ -106,7 +106,7 @@ services:
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
-      GF_INSTALL_PLUGINS: "grafana-exploretraces-app,grafana-lokiexplore-app,grafana-metricsdrilldown-app"
+      GF_INSTALL_PLUGINS: "grafana-exploretraces-app,grafana-lokiexplore-app,grafana-metricsdrilldown-app,heywesty-trafficlight-panel,marcusolsson-dynamictext-panel"
     restart: unless-stopped
     volumes:
       - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
