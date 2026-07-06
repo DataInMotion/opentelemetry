@@ -1,0 +1,208 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 180
+              },
+              {
+                "color": "red",
+                "value": 600
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "last_over_time({topic=\"$topic\"} | label_format age=`{{sub (now | unixEpoch) (__timestamp__ | unixEpoch)}}` | label_format host=\"\" | unwrap age [5m])",
+          "legendFormat": "{{topic}}",
+          "queryType": "range",
+          "refId": "A",
+          "step": ""
+        }
+      ],
+      "title": "Time since last message",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "1 = Green\n2 = Yellow\n3 = Red\n4 = Off\n0 = Unknown",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 2
+              },
+              {
+                "color": "green",
+                "value": 3
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 5,
+        "x": 3,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "customColors": {
+          "enabled": false
+        },
+        "horizontal": false,
+        "layoutMode": "Grid",
+        "minLightWidth": 100,
+        "reverseColors": false,
+        "showLegend": true,
+        "showTrend": true,
+        "showValue": true,
+        "sortLights": "None",
+        "style": "default"
+      },
+      "pluginVersion": "1.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "last_over_time({topic=\"$topic\"}\n| regexp \"(?P<symbol>🟢|🟡|🔴)\"\n| label_format code=\"{{ if eq .symbol \\\"🟢\\\" }}3{{ else if eq .symbol \\\"🟡\\\" }}2{{ else if eq .symbol \\\"🔴\\\" }}1{{ else if eq .symbol \\\"⚪\\\" }}4{{ else }}0{{ end }}\"\n| label_format symbol=\"\"\n| label_format host=\"\"\n| unwrap code [$__auto])",
+          "legendFormat": "{{topic}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "State",
+      "type": "heywesty-trafficlight-panel"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 42,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "v1.1/Locations(bus359)",
+          "value": "v1.1/Locations(bus359)"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "definition": "",
+        "name": "topic",
+        "options": [],
+        "query": {
+          "label": "topic",
+          "refId": "LokiVariableQueryEditor-VariableQuery",
+          "stream": "",
+          "type": 1
+        },
+        "refresh": 1,
+        "regex": "",
+        "regexApplyTo": "value",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "MQTT",
+  "version": 14,
+  "weekStart": ""
+}
