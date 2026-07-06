@@ -556,7 +556,41 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "thresholds": {
@@ -567,12 +601,8 @@
                 "value": 0
               },
               {
-                "color": "yellow",
-                "value": 300
-              },
-              {
                 "color": "red",
-                "value": 400
+                "value": 80
               }
             ]
           }
@@ -585,13 +615,173 @@
         "x": 18,
         "y": 8
       },
-      "id": 3,
+      "id": 9,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "editorMode": "builder",
+          "expr": "probe_ssl_last_chain_info{instance=\"$endpoint\"}",
+          "legendFormat": "{{fingerprint_sha256}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Last Chain Cert Fingerprint",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 16
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.2",
+      "targets": [
+        {
+          "editorMode": "builder",
+          "exemplar": false,
+          "expr": "probe_tls_version_info{instance=\"$endpoint\"}",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{version}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "TLS Version",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1209600
+              },
+              {
+                "color": "green",
+                "value": 1209601
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 16
+      },
+      "id": 7,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
         "orientation": "auto",
-        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -599,166 +789,22 @@
           "fields": "",
           "values": false
         },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
       "pluginVersion": "12.4.2",
       "targets": [
         {
-          "editorMode": "builder",
-          "expr": "probe_http_status_code{instance=\"$endpoint\"}",
+          "editorMode": "code",
+          "expr": "(probe_ssl_earliest_cert_expiry{instance=\"$endpoint\"} - time())",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "HTTP Status Code",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 0,
-        "y": 16
-      },
-      "id": 13,
-      "options": {
-        "afterRender": "",
-        "content": "<div style=\"\n  font-size:36px;\n  font-weight:bold;\n  padding:20px;\n\">\n  <p>{{ version }}</p>\n</div>",
-        "contentPartials": [],
-        "defaultContent": "The query didn't return any results.",
-        "editor": {
-          "format": "auto",
-          "language": "html"
-        },
-        "editors": [],
-        "externalStyles": [],
-        "helpers": "",
-        "renderMode": "everyRow",
-        "styles": "",
-        "wrap": true
-      },
-      "pluginVersion": "6.3.0",
-      "targets": [
-        {
-          "editorMode": "builder",
-          "exemplar": false,
-          "expr": "probe_tls_version_info",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "TLS Version",
-      "transformations": [
-        {
-          "id": "labelsToFields",
-          "options": {
-            "keepLabels": [
-              "version"
-            ]
-          }
-        }
-      ],
-      "type": "marcusolsson-dynamictext-panel"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 6,
-        "y": 16
-      },
-      "id": 14,
-      "options": {
-        "afterRender": "",
-        "content": "<div style=\"\n  font-size:36px;\n  font-weight:bold;\n  padding:20px;\n\">\n  <p>{{ cipher }}</p>\n</div>",
-        "contentPartials": [],
-        "defaultContent": "The query didn't return any results.",
-        "editor": {
-          "format": "auto",
-          "language": "html"
-        },
-        "editors": [],
-        "externalStyles": [],
-        "helpers": "",
-        "renderMode": "everyRow",
-        "styles": "",
-        "wrap": true
-      },
-      "pluginVersion": "6.3.0",
-      "targets": [
-        {
-          "editorMode": "builder",
-          "exemplar": false,
-          "expr": "probe_tls_cipher_info",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Cipher",
-      "transformations": [
-        {
-          "id": "labelsToFields",
-          "options": {
-            "keepLabels": [
-              "cipher",
-              "instance",
-              "job"
-            ]
-          }
-        }
-      ],
-      "type": "marcusolsson-dynamictext-panel"
+      "title": "Earliest Cert Expiry",
+      "type": "gauge"
     },
     {
       "datasource": {
@@ -846,16 +892,15 @@
                 "value": 0
               },
               {
-                "color": "red",
-                "value": 1209600
+                "color": "yellow",
+                "value": 300
               },
               {
-                "color": "green",
-                "value": 1209601
+                "color": "red",
+                "value": 400
               }
             ]
-          },
-          "unit": "s"
+          }
         },
         "overrides": []
       },
@@ -865,11 +910,13 @@
         "x": 18,
         "y": 16
       },
-      "id": 7,
+      "id": 3,
       "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -877,95 +924,22 @@
           "fields": "",
           "values": false
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
       "pluginVersion": "12.4.2",
       "targets": [
         {
-          "editorMode": "code",
-          "expr": "(probe_ssl_earliest_cert_expiry{instance=\"$endpoint\"} - time())",
+          "editorMode": "builder",
+          "expr": "probe_http_status_code{instance=\"$endpoint\"}",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Earliest Cert Expiry",
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 21
-      },
-      "id": 15,
-      "options": {
-        "afterRender": "",
-        "content": "<div style=\"\n  font-size:36px;\n  font-weight:bold;\n  padding:20px;\n\">\n  <p>Fingerprint: {{ fingerprint_sha256 }}</p>\n  <p>Serialnumber: {{serialnumber}}</p>\n</div>",
-        "contentPartials": [],
-        "defaultContent": "The query didn't return any results.",
-        "editor": {
-          "format": "auto",
-          "language": "html"
-        },
-        "editors": [],
-        "externalStyles": [],
-        "helpers": "",
-        "renderMode": "everyRow",
-        "styles": "",
-        "wrap": true
-      },
-      "pluginVersion": "6.3.0",
-      "targets": [
-        {
-          "editorMode": "builder",
-          "exemplar": false,
-          "expr": "probe_ssl_last_chain_info",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Certificate Fingerprint / Serialnumber",
-      "transformations": [
-        {
-          "id": "labelsToFields",
-          "options": {
-            "keepLabels": [
-              "cipher",
-              "serialnumber",
-              "fingerprint_sha256"
-            ]
-          }
-        }
-      ],
-      "type": "marcusolsson-dynamictext-panel"
+      "title": "HTTP Status Code",
+      "type": "stat"
     }
   ],
   "preload": false,
@@ -1004,7 +978,7 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "HTTP Status",
-  "uid": "gvrrjc",
-  "version": 6,
+  "uid": "g9stpb",
+  "version": 23,
   "weekStart": ""
 }

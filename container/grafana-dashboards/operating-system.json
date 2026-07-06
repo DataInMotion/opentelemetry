@@ -1503,12 +1503,12 @@
           "type": "prometheus",
           "uid": "prometheus"
         },
-        "definition": "label_values(target_info,host_name)",
+        "definition": "label_values(system_cpu_load_average_1m,host_name)",
         "name": "host_name",
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(target_info,host_name)",
+          "query": "label_values(system_cpu_load_average_1m,host_name)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
