@@ -1,0 +1,30 @@
+groups:
+  - name: mqtt-feed-silence-alerts
+    rules:
+      - alert: MqttGroupSilent
+        expr: |
+          (
+            sum by(group) (
+              count_over_time(
+                {__name="mqtt_log"}
+                | regexp "^.*@iot.id\":\"(?P<group>[^~]+)"
+                [1h]
+              )
+            ) > 0
+          )
+          unless
+          (
+            sum by(group) (
+              count_over_time(
+                {__name="mqtt_log"}
+                | regexp "^.*@iot.id\":\"(?P<group>[^~]+)"
+                [5m]
+              )
+            ) > 0
+          )
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MQTT Group silent"
+          description: "Group {{ $labels.group }} has not sent any data for at least 5 minutes (was active within last hour)."
