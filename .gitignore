@@ -41,3 +41,5 @@ container/config/matrix-receiver/secret.env
 # Telegraf MQTT bridge broker credentials
 container/config/telegraf/secret.env
 
+# matrix-alertmanager-receiver credentials
+container/config/matrix-receiver/.env

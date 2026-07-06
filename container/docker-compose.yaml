@@ -153,6 +153,8 @@ services:
       - ./config/matrix-receiver/config.yaml:/etc/matrix-alertmanager-receiver/config.yaml:ro
     networks:
       - tele-net
+    env_file:
+      - ./config/matrix-receiver/.env
 
   blackbox-exporter:
     image: prom/blackbox-exporter

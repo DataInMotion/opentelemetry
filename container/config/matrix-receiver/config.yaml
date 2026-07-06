@@ -23,7 +23,7 @@ matrix:
   # than Matrix, so it reaches Synapse over the internet via APISIX.
   homeserver-url: https://chat.datainmotion.com
   user-id: "@alertbot:chat.datainmotion.com"
-  access-token: syt_YWxlcnRib3Q_pkMuRTwsPVrCJHBdhuuv_0TVNxD
+  access-token: ${MATRIX_ACCESS_TOKEN}
   room-mapping:
     # Alias used in the Alertmanager webhook URL (/alerts/dim-alerts).
     dim-alerts: "!fUFbFpVVCfhlNAojFG:chat.datainmotion.com"
