@@ -24,10 +24,10 @@ groups:
       # WARNING: any panic/stacktrace appearing in logs.
       - alert: PanicInLogs
         expr: |
-          sum(count_over_time({service_name=~".+"} |~ "(?i)panic:|traceback|stack trace" [5m])) > 0
+          sum by (host_name, log_source, systemd_unit, message) (count_over_time({service_name=~".+"} |~ "(?i)panic:|traceback|stack trace" | json | label_format systemd_unit="{{._SYSTEMD_UNIT}}"[5m])) > 0
         for: 0m
         labels:
           severity: warning
         annotations:
           summary: "Panic or stack trace detected in logs"
-          description: "A panic/traceback/stack-trace pattern was logged in the last 5 minutes."
+          description: "Host: {{ $labels.host_name }} Source: {{ $labels.log_source }} Unit: {{ $labels.systemd_unit }}"

@@ -31,5 +31,5 @@ matrix:
 templating:
   external-url-mapping: {}
   generator-url-mapping: {}
-  firing-template: "🔥 [{{ ToUpper .Alert.Labels.severity }}] {{ .Alert.Labels.alertname }} — {{ .Alert.Annotations.summary }}{{ if .Alert.Annotations.description }} | {{ .Alert.Annotations.description }}{{ end }}"
+  firing-template: "🔥 [{{ ToUpper .Alert.Labels.severity }}] {{ .Alert.Labels.alertname }} — {{ .Alert.Annotations.summary }}<br>{{ if .Alert.Annotations.description }}{{ .Alert.Annotations.description }}{{ end }}"
   resolved-template: "✅ [RESOLVED] {{ .Alert.Labels.alertname }}{{ if .Alert.Annotations.summary }} — {{ .Alert.Annotations.summary }}{{ end }}"
