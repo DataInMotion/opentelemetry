@@ -156,6 +156,8 @@ services:
 
   blackbox-exporter:
     image: prom/blackbox-exporter
+    volumes:
+      - ./config/blackbox.yml:/etc/blackbox_exporter/config.yml:ro
     networks:
       - tele-net
     restart: unless-stopped

@@ -30,12 +30,18 @@ scrape_configs:
           - https://datainmotion.com/
           - https://www.datainmotion.de/
           - https://www.datainmotion.de/posts/
-          - devel.data-in-motion.biz
+          - https://devel.data-in-motion.biz/
           - https://devel.data-in-motion.biz/jenkins-internal/
           - https://devel.data-in-motion.biz/nexus/
           - https://devel.data-in-motion.biz/jenkins/
           - https://devel.data-in-motion.biz/repository/
-
+          - https://chat.datainmotion.com/
+          - https://md.datainmotion.com/
+          - https://files.datainmotion.com/
+          - https://video.datainmotion.com/
+          - https://vault.datainmotion.com/
+          - https://openbao.datainmotion.com/
+          - https://auth.datainmotion.com/
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -46,3 +52,21 @@ scrape_configs:
       - target_label: __address__
         replacement: blackbox-exporter:9115
 
+  - job_name: blackbox-oauth
+    metrics_path: /probe
+    params:
+      module: [basic_auth_test]
+
+    static_configs:
+      - targets:
+          - https://telemetry.modelatlas.cloud/
+
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+
+      - source_labels: [__param_target]
+        target_label: instance
+
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
